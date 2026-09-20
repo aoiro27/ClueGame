@@ -16,6 +16,7 @@ enum Palette {
 /// A layered storybook backdrop, drawn in code so it stays sharp on every iPad size.
 struct NightSky: View {
     @State private var drifting = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         GeometryReader { proxy in
@@ -31,15 +32,16 @@ struct NightSky: View {
                 }
                 .opacity(drifting ? 1 : 0.72)
                 MoonView()
-                    .frame(width: min(136, proxy.size.width * 0.3), height: min(136, proxy.size.width * 0.3))
-                    .position(x: proxy.size.width * 0.79, y: proxy.size.height * 0.14)
+                    .frame(width: min(72, proxy.size.width * 0.17), height: min(72, proxy.size.width * 0.17))
+                    .position(x: proxy.size.width * 0.87, y: proxy.size.height * 0.055)
                     .scaleEffect(drifting ? 1.03 : 0.97)
+                    .opacity(0.55)
                 ForestSilhouette().fill(Color.black.opacity(0.30)).frame(height: proxy.size.height * 0.28).frame(maxHeight: .infinity, alignment: .bottom)
                 ForestSilhouette().fill(Color(red: 0.015, green: 0.08, blue: 0.11).opacity(0.9)).frame(height: proxy.size.height * 0.19).frame(maxHeight: .infinity, alignment: .bottom).offset(x: drifting ? 12 : -12)
             }
         }
         .ignoresSafeArea().allowsHitTesting(false)
-        .onAppear { withAnimation(.easeInOut(duration: 3.8).repeatForever(autoreverses: true)) { drifting = true } }
+        .onAppear { guard !reduceMotion else { return }; withAnimation(.easeInOut(duration: 3.8).repeatForever(autoreverses: true)) { drifting = true } }
     }
 }
 
@@ -95,18 +97,81 @@ struct QuestProgressView: View {
     }
 }
 
+/// Actions have an intentional width independent of the device's canvas.
 struct PrimaryButtonStyle: ButtonStyle {
     var disabled = false
+    @Environment(\.isEnabled) private var isEnabled
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label.font(.system(size: 20, weight: .heavy, design: .rounded)).foregroundStyle(Palette.ink).frame(maxWidth: .infinity).padding(.vertical, 17)
-            .background(LinearGradient(colors: [Palette.lanternHot, Palette.lantern], startPoint: .top, endPoint: .bottom), in: Capsule()).overlay(Capsule().stroke(.white.opacity(0.6), lineWidth: 1)).shadow(color: Palette.lantern.opacity(0.32), radius: 12, y: 6).opacity(disabled || configuration.isPressed ? 0.7 : 1).scaleEffect(configuration.isPressed ? 0.97 : 1)
+        configuration.label
+            .font(.system(.headline, design: .rounded).weight(.bold))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(Palette.ink)
+            .padding(.horizontal, 26).padding(.vertical, 18)
+            .frame(minHeight: 56).frame(maxWidth: 340)
+            .background(LinearGradient(colors: [Palette.lanternHot, Palette.lantern], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 19))
+            .overlay(RoundedRectangle(cornerRadius: 19).stroke(.white.opacity(0.5), lineWidth: 1))
+            .shadow(color: Palette.lantern.opacity(0.18), radius: 18, y: 8)
+            .opacity(disabled || !isEnabled ? 0.4 : configuration.isPressed ? 0.8 : 1)
+            .scaleEffect(configuration.isPressed ? 0.98 : 1)
     }
 }
 
 struct SecondaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label.font(.system(size: 17, weight: .bold, design: .rounded)).foregroundStyle(.white).frame(maxWidth: .infinity).padding(.vertical, 14)
-            .background(.white.opacity(configuration.isPressed ? 0.18 : 0.11), in: Capsule()).overlay(Capsule().stroke(Palette.lantern.opacity(0.45), lineWidth: 1.5)).scaleEffect(configuration.isPressed ? 0.98 : 1)
+        configuration.label
+            .font(.system(.subheadline, design: .rounded).weight(.semibold))
+            .multilineTextAlignment(.center).foregroundStyle(.white)
+            .padding(.horizontal, 22).padding(.vertical, 15).frame(minHeight: 48)
+            .background(.white.opacity(configuration.isPressed ? 0.16 : 0.07), in: RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(.white.opacity(0.16), lineWidth: 1))
+    }
+}
+
+struct StoryPage<Content: View>: View {
+    var width: CGFloat = 620
+    @ViewBuilder var content: () -> Content
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 26, content: content)
+                .padding(24).frame(maxWidth: width)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+        }
+        .scrollIndicators(.hidden)
+    }
+}
+
+struct SectionCaption: View {
+    var text: String
+    var body: some View {
+        Text(text).font(.system(.caption, design: .rounded).weight(.bold))
+            .tracking(2).foregroundStyle(Palette.lantern)
+    }
+}
+
+struct MenuCard: View {
+    var title: String
+    var subtitle: String
+    var symbol: String
+    var accent: Color = Palette.lantern
+    var action: () -> Void
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: symbol).font(.system(size: 23, weight: .medium))
+                    .foregroundStyle(accent).frame(width: 54, height: 58)
+                    .background(accent.opacity(0.1), in: RoundedRectangle(cornerRadius: 16))
+                VStack(alignment: .leading, spacing: 7) {
+                    Text(title).font(.system(.headline, design: .rounded)).foregroundStyle(.white)
+                    Text(subtitle).font(.system(.caption, design: .rounded)).foregroundStyle(Palette.muted).lineSpacing(3)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: "chevron.right").font(.caption.bold()).foregroundStyle(accent)
+            }
+            .padding(18).frame(maxWidth: .infinity, alignment: .leading)
+            .background(LinearGradient(colors: [accent.opacity(0.10), .white.opacity(0.035)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 24))
+            .overlay(RoundedRectangle(cornerRadius: 24).stroke(.white.opacity(0.13), lineWidth: 1))
+        }.buttonStyle(.plain)
     }
 }
 

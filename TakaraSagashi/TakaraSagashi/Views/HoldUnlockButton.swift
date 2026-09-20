@@ -9,20 +9,21 @@ struct HoldUnlockButton: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            Text(title)
+            Label(title, systemImage: "lock.fill")
                 .font(.system(size: 15, weight: .bold, design: .rounded))
                 .foregroundStyle(Palette.muted)
             Capsule()
                 .fill(.white.opacity(0.15))
-                .frame(height: 4)
+                .frame(height: 2)
                 .overlay(alignment: .leading) {
                     Capsule()
                         .fill(Palette.lantern)
-                        .frame(width: 220 * progress, height: 4)
+                        .frame(width: (title == "おとな" ? 64 : 190) * progress, height: 2)
                 }
-                .frame(width: 220)
+                .frame(width: title == "おとな" ? 64 : 190)
         }
-        .padding(.vertical, 8)
+        .padding(.horizontal, 12).padding(.vertical, 10)
+        .frame(minHeight: 44)
         .contentShape(Rectangle())
         .onLongPressGesture(minimumDuration: 1.3, maximumDistance: 80) {
             holdTask?.cancel()
@@ -45,6 +46,9 @@ struct HoldUnlockButton: View {
                 progress = 0
             }
         }
+        .accessibilityAddTraits(.isButton)
+        .accessibilityHint("長押し、または5回タップで開きます")
+        .onDisappear { holdTask?.cancel(); progress = 0; taps = 0 }
         .onTapGesture {
             taps += 1
             if taps >= 5 {

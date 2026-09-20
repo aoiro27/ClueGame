@@ -30,10 +30,15 @@ struct QRCardView: View {
                     .foregroundStyle(Palette.ink)
             }
             if showsShare {
-                Button("保存して印刷") {
+                Button {
                     shareImage = QRCodeImage.make(payload)
-                }
-                .buttonStyle(SecondaryButtonStyle())
+                } label: {
+                    Label("保存して印刷", systemImage: "square.and.arrow.up")
+                        .font(.system(.subheadline, design: .rounded).bold())
+                        .foregroundStyle(Palette.ink)
+                        .padding(.horizontal, 18).frame(minHeight: 48)
+                        .background(Palette.ink.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
+                }.buttonStyle(.plain)
             }
         }
         .padding(16)
@@ -197,7 +202,9 @@ private struct TreasureSculpture: View {
             // A per-treasure crest gives similar materials their own identity.
             if [.medal, .orb, .bottle, .acorn].contains(treasure.shape) {
                 let crest = Image(systemName: treasure.crest)
-                context.draw(context.resolve(crest).shading(.color(.white.opacity(0.9))), in: CGRect(x: 40, y: treasure.shape == .medal ? 52 : 54, width: 20, height: 20))
+                var resolved = context.resolve(crest)
+                resolved.shading = .color(.white.opacity(0.9))
+                context.draw(resolved, in: CGRect(x: 40, y: treasure.shape == .medal ? 52 : 54, width: 20, height: 20))
             }
         }
     }

@@ -1,3 +1,5 @@
+import Foundation
+import SwiftUI
 import Testing
 @testable import TakaraSagashi
 
@@ -107,6 +109,50 @@ struct HuntEngineTests {
 }
 
 struct TreasureCatalogTests {
+    @MainActor @Test func treasureArtworkRenders() throws {
+        let gallery = VStack(spacing: 20) {
+            Text("たからのずかん").font(.title.bold()).foregroundStyle(.white)
+            Text("50  COLLECTION").font(.caption.bold()).foregroundStyle(Palette.lantern)
+            LazyVGrid(columns: [GridItem(.fixed(164)), GridItem(.fixed(164))], spacing: 16) {
+                ForEach(TreasureCatalog.all.prefix(10)) { treasure in
+                    VStack(spacing: 6) {
+                        TreasureArtView(treasure: treasure, size: 140)
+                        Text(treasure.name).font(.system(size: 13, weight: .bold)).foregroundStyle(.white)
+                        RarityBadge(rarity: treasure.rarity)
+                    }
+                    .padding(.vertical, 12).frame(width: 164)
+                    .background(treasure.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 22))
+                }
+            }
+        }
+        .padding(20).background(Palette.night).environment(\.colorScheme, .dark)
+        let renderer = ImageRenderer(content: gallery)
+        renderer.scale = 2
+        let image = try #require(renderer.uiImage)
+        let data = try #require(image.pngData())
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent("treasure-gallery.png")
+        try data.write(to: path)
+        print("Treasure gallery preview: \(path.path)")
+    }
+
+    @Test func catalogHasFiftyDistinctTreasures() {
+        #expect(TreasureCatalog.all.count == 50)
+        #expect(Set(TreasureCatalog.all.map(\.id)).count == 50)
+        #expect(Set(TreasureCatalog.all.map(\.name)).count == 50)
+    }
+
+    @Test func fiftyAdventuresCompleteTheCollectionBeforeRepeats() throws {
+        var collection: [CollectedTreasure] = []
+        for index in 0..<50 {
+            collection.append(TreasureCatalog.awardTreasure(collection: collection, huntId: "adventure-\(index)"))
+        }
+        #expect(Set(collection.map(\.treasureId)).count == 50)
+        let afterCompletion = TreasureCatalog.awardTreasure(collection: collection, huntId: "adventure-51")
+        #expect(TreasureCatalog.all.contains { $0.id == afterCompletion.treasureId })
+        let restored = try JSONDecoder().decode([CollectedTreasure].self, from: JSONEncoder().encode(collection))
+        #expect(TreasureCatalog.uniqueCollected(restored).count == 50)
+    }
+
     @Test func prefersUnownedTreasure() {
         let first = TreasureCatalog.awardTreasure(collection: [], huntId: "hunt-a")
         let second = TreasureCatalog.awardTreasure(collection: [first], huntId: "hunt-b")
