@@ -13,6 +13,7 @@ struct RootView: View {
                 case .setupCount: SetupCountView()
                 case .setupStage: SetupStageView()
                 case .setupReady: SetupReadyView()
+                case .qrDeck: QRDeckView()
                 case .play: PlayView()
                 case .scan: ScanView()
                 case .clear: ClearView()

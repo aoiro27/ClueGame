@@ -16,19 +16,25 @@ struct HomeView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("よるの森のぼうけん")
+            Label("よるの森のぼうけん", systemImage: "sparkles")
                 .font(.system(size: 13, weight: .bold, design: .rounded))
                 .foregroundStyle(Palette.lantern)
                 .tracking(4)
             Text("たからさがし")
                 .font(.system(size: 46, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
-            OwlView(mood: store.hunt?.status == .cleared ? .yay : .idle, size: 200)
-            Text(lead)
-                .font(.system(size: 17, design: .rounded))
-                .foregroundStyle(Palette.muted)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            ZStack {
+                Circle().fill(Palette.lantern.opacity(0.12)).frame(width: 226, height: 226).blur(radius: 14)
+                OwlView(mood: store.hunt?.status == .cleared ? .yay : .idle, size: 200)
+            }
+            GlassPanel {
+                Text(lead)
+                    .font(.system(size: 17, design: .rounded))
+                    .foregroundStyle(Palette.muted)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 15)
+            }
             if canStart {
                 Button(store.hunt?.status == .playing ? "つづける" : "ぼうけんスタート") {
                     store.startAdventure()
@@ -39,6 +45,7 @@ struct HomeView: View {
                 store.openCollection()
             } label: {
                 HStack {
+                    Image(systemName: "shippingbox.fill")
                     Text("たからばこ")
                     if !store.collection.isEmpty {
                         Text("\(store.collection.count)")
@@ -83,9 +90,11 @@ struct ParentView: View {
             topBar("おとなのメニュー") { store.goTo(.home) }
             OwlView(mood: .sleep, size: 96)
                 .frame(maxWidth: .infinity)
-            Text("QRを1〜5まい用意して、家のどこかにかくします。ヒントを書いたら、こどもにタブレットをわたしてください。")
+            Text("QRカードは5まいまで、いちど印刷すれば何度でも使えます。ぼうけんごとに使う枚数とヒントだけ変えてください。")
                 .font(.system(size: 16, design: .rounded))
                 .foregroundStyle(Palette.muted)
+            Button("5まいのQRカードをみる") { store.openQRDeck() }
+                .buttonStyle(SecondaryButtonStyle())
             Button("あたらしいぼうけんをつくる") {
                 if hasActive {
                     confirmNew = true
@@ -95,17 +104,13 @@ struct ParentView: View {
             }
             .buttonStyle(PrimaryButtonStyle())
             if store.hunt != nil {
-                Button("QRコードをひょうじする") { store.reviewQR() }
+                Button("ヒントをみなおす") { store.reviewQR() }
                     .buttonStyle(SecondaryButtonStyle())
             }
             if hasActive {
                 Button("いまのぼうけんをやめる") { store.abandonHunt() }
                     .buttonStyle(SecondaryButtonStyle())
             }
-            Toggle("おなじタブレットでためす（カメラなし）", isOn: Bindable(store).practiceMode)
-                .font(.system(size: 16, design: .rounded))
-                .foregroundStyle(Palette.muted)
-                .tint(Palette.lantern)
             Spacer()
         }
         .padding(24)
@@ -127,7 +132,7 @@ struct SetupCountView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             topBar("なんまい使う？") { store.goTo(.parent) }
-            Text("かくすQRコードの枚数をえらんでね。さいだい5まい。")
+            Text("用意した5まいのうち、今回かくす枚数をえらんでね。")
                 .font(.system(size: 16, design: .rounded))
                 .foregroundStyle(Palette.muted)
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 100), spacing: 14)], spacing: 14) {
@@ -136,6 +141,8 @@ struct SetupCountView: View {
                         store.chooseStageCount(count)
                     } label: {
                         VStack {
+                            Image(systemName: "map.fill")
+                                .font(.title2)
                             Text("\(count)")
                                 .font(.system(size: 40, weight: .bold, design: .rounded))
                             Text("まい")
@@ -143,11 +150,8 @@ struct SetupCountView: View {
                         }
                         .foregroundStyle(Palette.lantern)
                         .frame(maxWidth: .infinity, minHeight: 110)
-                        .background(
-                            RoundedRectangle(cornerRadius: 28)
-                                .fill(Color(red: 0.12, green: 0.07, blue: 0.22))
-                                .overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.lantern.opacity(0.5), lineWidth: 3))
-                        )
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
+                        .overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.lantern.opacity(0.5), lineWidth: 2))
                     }
                 }
             }
@@ -175,12 +179,11 @@ struct SetupStageView: View {
                 Text("かくして、ヒントをかいてね")
                     .font(.system(size: 28, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
-                Text("このQRを保存して家のどこかにかくします。かくした場所をこども向けの言葉で書いてください。")
-                    .font(.system(size: 16, design: .rounded))
-                    .foregroundStyle(Palette.muted)
-                if let hunt = store.hunt, let stage = store.currentStage,
-                   let payload = try? HuntEngine.encodeQRPayload(hunt, stageIndex: stage.index) {
-                    QRCardView(payload: payload, label: "\(stage.index)まいめ", hint: stage.hint)
+                if let hunt = store.hunt, let stage = store.currentStage {
+                    Text("持っている \(stage.index) まいめのカードをかくして、かくした場所をこども向けの言葉で書いてください。")
+                        .font(.system(size: 16, design: .rounded))
+                        .foregroundStyle(Palette.muted)
+                    StageCardBadge(index: stage.index, total: hunt.stageCount)
                     Text("かくしたばしょのヒント")
                         .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
@@ -193,7 +196,7 @@ struct SetupStageView: View {
                     Text("\(stage.hint.count)/\(HuntEngine.maxHintLength)")
                         .font(.system(size: 13, design: .rounded))
                         .foregroundStyle(Palette.muted)
-                    Button(stage.index == hunt.stageCount ? "QRをそろえる" : "つぎのQRへ") {
+                    Button(stage.index == hunt.stageCount ? "かくしものをおわる" : "つぎのカードへ") {
                         store.nextSetupStage()
                     }
                     .buttonStyle(PrimaryButtonStyle(disabled: stage.hint.isEmpty))
@@ -219,18 +222,31 @@ struct SetupReadyView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 topBar("かくしものセット") { store.goTo(.parent) }
-                Text("QRを保存して印刷し、家のどこかにかくしたらスタート。")
+                Text("番号どおりにカードをかくしたら、こどもにタブレットをわたしてスタート。")
                     .font(.system(size: 16, design: .rounded))
                     .foregroundStyle(Palette.muted)
-                Toggle("おなじタブレットでためす", isOn: Bindable(store).practiceMode)
-                    .font(.system(size: 16, design: .rounded))
-                    .foregroundStyle(Palette.muted)
-                    .tint(Palette.lantern)
                 if let hunt = store.hunt {
                     ForEach(hunt.stages) { stage in
-                        if let payload = try? HuntEngine.encodeQRPayload(hunt, stageIndex: stage.index) {
-                            QRCardView(payload: payload, label: "\(stage.index)まいめ", hint: stage.hint)
+                        HStack(alignment: .top, spacing: 12) {
+                            Text("\(stage.index)")
+                                .font(.system(size: 22, weight: .heavy, design: .rounded))
+                                .foregroundStyle(Palette.ink)
+                                .frame(width: 44, height: 44)
+                                .background(Palette.lantern)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("\(stage.index)まいめのカード")
+                                    .font(.system(size: 15, weight: .bold, design: .rounded))
+                                    .foregroundStyle(.white)
+                                Text(stage.hint)
+                                    .font(.system(size: 16, design: .rounded))
+                                    .foregroundStyle(Palette.muted)
+                            }
+                            Spacer()
                         }
+                        .padding(14)
+                        .background(Color.white.opacity(0.08))
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
                     }
                 }
                 Button("こどもにわたしてスタート") { store.startAdventure() }
@@ -241,6 +257,53 @@ struct SetupReadyView: View {
             }
             .padding(24)
         }
+    }
+}
+
+struct QRDeckView: View {
+    @Environment(GameStore.self) private var store
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                topBar("QRカード") { store.goTo(.parent) }
+                Text("この5まいをいちど印刷して、番号がわかるようにしておいてください。ぼうけんのたびに印刷しなおす必要はありません。")
+                    .font(.system(size: 16, design: .rounded))
+                    .foregroundStyle(Palette.muted)
+                ForEach(1...HuntEngine.maxStages, id: \.self) { index in
+                    QRCardView(
+                        payload: "\(HuntEngine.qrPrefix):\(index)",
+                        label: "\(index)まいめ",
+                        showsShare: true
+                    )
+                }
+            }
+            .padding(24)
+        }
+    }
+}
+
+struct StageCardBadge: View {
+    var index: Int
+    var total: Int
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("\(index)")
+                .font(.system(size: 64, weight: .heavy, design: .rounded))
+                .foregroundStyle(Palette.ink)
+            Text("まいめのカードをかくす")
+                .font(.system(size: 18, weight: .bold, design: .rounded))
+                .foregroundStyle(Palette.ink)
+            Text("ぜんぶで \(total) まい")
+                .font(.system(size: 14, design: .rounded))
+                .foregroundStyle(Palette.ink.opacity(0.7))
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity)
+        .background(Palette.parchment)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Palette.lantern.opacity(0.65), lineWidth: 2))
     }
 }
 

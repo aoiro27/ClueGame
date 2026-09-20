@@ -10,14 +10,17 @@ final class GameStore {
     var collection: [CollectedTreasure] = []
     var lastAwardedId: String?
     var scanResult: ScanResult?
-    var practiceMode = false
 
-    private let defaultsKey = "cluegame-native-v1"
+    private let defaultsKey = "cluegame-native-v2"
+    private let legacyDefaultsKey = "cluegame-native-v1"
 
     init() {
         restore()
         if screen == .scan {
             screen = .play
+        }
+        if screen == .qrDeck {
+            screen = .home
         }
     }
 
@@ -157,6 +160,11 @@ final class GameStore {
         persist()
     }
 
+    func openQRDeck() {
+        screen = .qrDeck
+        persist()
+    }
+
     func reviewQR() {
         guard hunt != nil else { return }
         screen = .setupReady
@@ -176,39 +184,60 @@ final class GameStore {
         return TreasureCatalog.all[0]
     }
 
+    private var persistedScreen: Screen {
+        switch screen {
+        case .scan: .play
+        case .qrDeck: .home
+        default: screen
+        }
+    }
+
     private struct Snapshot: Codable {
         var screen: Screen
         var hunt: Hunt?
         var setupIndex: Int
         var collection: [CollectedTreasure]
         var lastAwardedId: String?
-        var practiceMode: Bool
     }
 
     private func persist() {
         let snapshot = Snapshot(
-            screen: screen == .scan ? .play : screen,
+            screen: persistedScreen,
             hunt: hunt,
             setupIndex: setupIndex,
             collection: collection,
-            lastAwardedId: lastAwardedId,
-            practiceMode: practiceMode
+            lastAwardedId: lastAwardedId
         )
         if let data = try? JSONEncoder().encode(snapshot) {
             UserDefaults.standard.set(data, forKey: defaultsKey)
         }
     }
 
+    private struct LegacySnapshot: Codable {
+        var collection: [CollectedTreasure]
+        var lastAwardedId: String?
+    }
+
     private func restore() {
-        guard let data = UserDefaults.standard.data(forKey: defaultsKey),
-              let snapshot = try? JSONDecoder().decode(Snapshot.self, from: data) else {
+        if let data = UserDefaults.standard.data(forKey: defaultsKey),
+           let snapshot = try? JSONDecoder().decode(Snapshot.self, from: data) {
+            apply(snapshot)
             return
         }
+        guard let data = UserDefaults.standard.data(forKey: legacyDefaultsKey),
+              let legacy = try? JSONDecoder().decode(LegacySnapshot.self, from: data) else {
+            return
+        }
+        collection = legacy.collection
+        lastAwardedId = legacy.lastAwardedId
+        persist()
+    }
+
+    private func apply(_ snapshot: Snapshot) {
         screen = snapshot.screen
         hunt = snapshot.hunt
         setupIndex = snapshot.setupIndex
         collection = snapshot.collection
         lastAwardedId = snapshot.lastAwardedId
-        practiceMode = snapshot.practiceMode
     }
 }

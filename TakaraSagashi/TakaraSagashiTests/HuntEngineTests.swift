@@ -2,7 +2,7 @@ import Testing
 @testable import TakaraSagashi
 
 private func readyHunt(stageCount: Int = 3) throws -> Hunt {
-    var hunt = try HuntEngine.createHunt(stageCount: stageCount, tokenFactory: { "token-seed" })
+    var hunt = try HuntEngine.createHunt(stageCount: stageCount)
     for index in 1...stageCount {
         hunt = try HuntEngine.setStageHint(hunt, stageIndex: index, hint: "\(index)ばんめはソファのした")
     }
@@ -10,12 +10,11 @@ private func readyHunt(stageCount: Int = 3) throws -> Hunt {
 }
 
 struct HuntEngineTests {
-    @Test func createHuntMakesUniqueTokens() throws {
+    @Test func createHuntMakesStages() throws {
         let hunt = try HuntEngine.createHunt(stageCount: 3)
         #expect(hunt.stageCount == 3)
         #expect(hunt.stages.count == 3)
         #expect(hunt.status == .draft)
-        #expect(Set(hunt.stages.map(\.token)).count == 3)
     }
 
     @Test func createHuntRejectsOutOfRange() {
@@ -34,18 +33,16 @@ struct HuntEngineTests {
         #expect(hunt.stages[0].hint == "")
     }
 
-    @Test func qrRoundTrips() throws {
-        let hunt = try HuntEngine.createHunt(stageCount: 2)
-        let payload = try HuntEngine.encodeQRPayload(hunt, stageIndex: 2)
-        let parsed = HuntEngine.parseQRPayload(payload)
-        #expect(parsed?.huntId == hunt.id)
-        #expect(parsed?.stageIndex == 2)
-        #expect(parsed?.token == hunt.stages[1].token)
+    @Test func qrCodesAreFixedAcrossHunts() throws {
+        let first = try HuntEngine.encodeQRPayload(stageIndex: 2)
+        let second = try HuntEngine.encodeQRPayload(stageIndex: 2)
+        #expect(first == second)
+        #expect(HuntEngine.parseQRPayload(first)?.stageIndex == 2)
     }
 
     @Test func parseRejectsGarbage() {
         #expect(HuntEngine.parseQRPayload("https://example.com") == nil)
-        #expect(HuntEngine.parseQRPayload("cluehunt:v1:abc:x:tok") == nil)
+        #expect(HuntEngine.parseQRPayload("cluehunt:v1:abc") == nil)
         #expect(HuntEngine.parseQRPayload("") == nil)
     }
 
@@ -58,7 +55,7 @@ struct HuntEngineTests {
 
     @Test func correctScanAdvances() throws {
         let hunt = try readyHunt()
-        let payload = try HuntEngine.encodeQRPayload(hunt, stageIndex: 1)
+        let payload = try HuntEngine.encodeQRPayload(stageIndex: 1)
         let outcome = HuntEngine.applyScan(hunt, payload: payload)
         #expect(outcome.result == .advanced(nextStage: 2, nextHint: "2ばんめはソファのした"))
         #expect(outcome.hunt.currentStageIndex == 2)
@@ -66,35 +63,45 @@ struct HuntEngineTests {
 
     @Test func lastScanClears() throws {
         var hunt = try readyHunt(stageCount: 2)
-        hunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 1)).hunt
-        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 2))
+        hunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 1)).hunt
+        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 2))
         #expect(outcome.result == .cleared)
         #expect(outcome.hunt.status == .cleared)
     }
 
     @Test func futureQRIsWrongOrder() throws {
         let hunt = try readyHunt()
-        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 3))
+        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 3))
         #expect(outcome.result == .wrongOrder(expected: 1, scanned: 3))
+    }
+
+    @Test func unusedCardWhenHuntUsesFewer() throws {
+        let hunt = try readyHunt(stageCount: 2)
+        let unused = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 3))
+        #expect(unused.result == .unused(scanned: 3))
+        let far = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 5))
+        #expect(far.result == .unused(scanned: 5))
+        let inHunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 2))
+        #expect(inHunt.result == .wrongOrder(expected: 1, scanned: 2))
     }
 
     @Test func pastQRIsAlreadyFound() throws {
         var hunt = try readyHunt()
-        hunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 1)).hunt
-        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 1))
+        hunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 1)).hunt
+        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 1))
         #expect(outcome.result == .alreadyFound(scanned: 1))
     }
 
     @Test func unknownPayload() throws {
         let hunt = try readyHunt(stageCount: 1)
-        let outcome = HuntEngine.applyScan(hunt, payload: "cluehunt:v1:other-hunt:1:zzzz")
+        let outcome = HuntEngine.applyScan(hunt, payload: "https://example.com")
         #expect(outcome.result == .unknown)
     }
 
     @Test func alreadyCleared() throws {
         var hunt = try readyHunt(stageCount: 1)
-        hunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 1)).hunt
-        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(hunt, stageIndex: 1))
+        hunt = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 1)).hunt
+        let outcome = HuntEngine.applyScan(hunt, payload: try HuntEngine.encodeQRPayload(stageIndex: 1))
         #expect(outcome.result == .alreadyCleared)
     }
 }

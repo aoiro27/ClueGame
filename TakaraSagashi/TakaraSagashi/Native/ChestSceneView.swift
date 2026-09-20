@@ -1,5 +1,6 @@
 import SceneKit
 import SwiftUI
+import UIKit
 
 struct ChestSceneView: UIViewRepresentable {
     var hue: Double
@@ -79,6 +80,27 @@ struct ChestSceneView: UIViewRepresentable {
         gem.scale = SCNVector3(0.01, 0.01, 0.01)
         scene.rootNode.addChildNode(gem)
 
+        // A tiny, self-contained particle system makes the reward feel magical without an external game engine.
+        let sparkles = SCNParticleSystem()
+        sparkles.birthRate = 0
+        sparkles.particleLifeSpan = 1.8
+        sparkles.particleLifeSpanVariation = 0.7
+        sparkles.particleSize = 0.045
+        sparkles.particleSizeVariation = 0.025
+        sparkles.emitterShape = SCNSphere(radius: 0.18)
+        sparkles.spreadingAngle = 120
+        sparkles.particleVelocity = 1.3
+        sparkles.particleVelocityVariation = 0.7
+        sparkles.acceleration = SCNVector3(0, -0.25, 0)
+        sparkles.blendMode = .additive
+        sparkles.particleColor = UIColor(red: 1, green: 0.86, blue: 0.34, alpha: 1)
+        sparkles.particleImage = UIImage(systemName: "sparkle")
+        let sparkleNode = SCNNode()
+        sparkleNode.name = "sparkles"
+        sparkleNode.position = SCNVector3(0, 1.12, 0)
+        sparkleNode.addParticleSystem(sparkles)
+        scene.rootNode.addChildNode(sparkleNode)
+
         return scene
     }
 
@@ -93,12 +115,14 @@ struct ChestSceneView: UIViewRepresentable {
             let lid = scene.rootNode.childNode(withName: "lidPivot", recursively: true)
             let gem = scene.rootNode.childNode(withName: "gem", recursively: true)
             let lantern = scene.rootNode.childNode(withName: "lantern", recursively: true)
+            let sparkles = scene.rootNode.childNode(withName: "sparkles", recursively: true)?.particleSystems?.first
             SCNTransaction.begin()
             SCNTransaction.animationDuration = 0.9
             lid?.eulerAngles.x = open ? -1.85 : 0
             gem?.scale = open ? SCNVector3(1, 1, 1) : SCNVector3(0.01, 0.01, 0.01)
             gem?.position = SCNVector3(0, open ? 1.5 : 0.55, 0)
             lantern?.light?.intensity = open ? 1400 : 500
+            sparkles?.birthRate = open ? 110 : 0
             SCNTransaction.commit()
         }
     }

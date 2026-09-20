@@ -5,51 +5,79 @@
 	};
 	objectVersion = 56;
 	objects = {
-		14C95C308B9A4751B546544F /* GameModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0E8C1A7FAB4521B2CE2B58 /* GameModels.swift */; };
-		2E3A7D13F9E945108EC776AA /* HuntEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC10E52CBC3047CDAE7507EB /* HuntEngine.swift */; };
-		E5F7E904AFC44DC0BD1F96A5 /* TreasureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B327EA576C694E25B783E1B6 /* TreasureCatalog.swift */; };
-		1837E72329D0485698A1E3A5 /* ChestSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE19C41805B4840B5B7ED12 /* ChestSceneView.swift */; };
-		A2C99BED3D9E40DE819E8C43 /* QRCodeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5DEDC39FCE341E39FB70444 /* QRCodeImage.swift */; };
-		7FF470AE586F477CBA2FFBA8 /* QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38CAC3284564D4289059CE9 /* QRScannerView.swift */; };
-		193229AE22B94B43A3D9DA2F /* SpeechPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B268251964857B1332901 /* SpeechPlayer.swift */; };
-		112CF6C53992492D862F32AF /* GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2352CCB9E241CE92D740EB /* GameStore.swift */; };
+
+/* Begin PBXBuildFile section */
+		003A167B59CC4E3A84DCEDA6 /* Views/HoldUnlockButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9C6633790A438DB9626E20 /* Views/HoldUnlockButton.swift */; };
+		112CF6C53992492D862F32AF /* Store/GameStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB2352CCB9E241CE92D740EB /* Store/GameStore.swift */; };
+		14C95C308B9A4751B546544F /* Engine/GameModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0E8C1A7FAB4521B2CE2B58 /* Engine/GameModels.swift */; };
+		1837E72329D0485698A1E3A5 /* Native/ChestSceneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0DE19C41805B4840B5B7ED12 /* Native/ChestSceneView.swift */; };
+		193229AE22B94B43A3D9DA2F /* Native/SpeechPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62B268251964857B1332901 /* Native/SpeechPlayer.swift */; };
+		2E3A7D13F9E945108EC776AA /* Engine/HuntEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC10E52CBC3047CDAE7507EB /* Engine/HuntEngine.swift */; };
 		363CA02EC385447BA477D17B /* TakaraSagashiApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 899AF2EDFFD44CB6B14015ED /* TakaraSagashiApp.swift */; };
-		003A167B59CC4E3A84DCEDA6 /* HoldUnlockButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B9C6633790A438DB9626E20 /* HoldUnlockButton.swift */; };
-		A07E02CD08204F679087C3F0 /* OwlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237578C75F84F9FB25A1993 /* OwlView.swift */; };
-		8A6C879BEFDC42D1A96AA9C5 /* PlayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A770E207D8F94BD5B7A0D625 /* PlayViews.swift */; };
-		B96AF66793D745DABEBAC8CC /* QRCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B42793D6134BCC9D90139D /* QRCardView.swift */; };
-		FBA2C0165405436189E08F5C /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B78AC6A417F48B6987B8681 /* RootView.swift */; };
-		4A4973BF0B714784B029CB39 /* SetupViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662EB3FD61E3426D8AB30ACE /* SetupViews.swift */; };
-		4EFD1D5400044BC08D9035E9 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5DA6EFC37B4FA1AA4E7988 /* Theme.swift */; };
-		C4B199E7EF3448BAB576987E /* HuntEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1174177E10241C18A49B617 /* HuntEngineTests.swift */; };
 		3B3AF1C687E54ACDAA38F860 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8A1821F566949B9824CA7A6 /* Assets.xcassets */; };
-		6A78BD00A82E43D2AAE47720 /* TakaraSagashi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TakaraSagashi.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DEB2D83285FC4361833B626A /* TakaraSagashiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TakaraSagashiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D8A1821F566949B9824CA7A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		AA0E8C1A7FAB4521B2CE2B58 /* Engine/GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine/GameModels.swift; sourceTree = "<group>"; };
-		DC10E52CBC3047CDAE7507EB /* Engine/HuntEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine/HuntEngine.swift; sourceTree = "<group>"; };
-		B327EA576C694E25B783E1B6 /* Engine/TreasureCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine/TreasureCatalog.swift; sourceTree = "<group>"; };
+		4A4973BF0B714784B029CB39 /* Views/SetupViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662EB3FD61E3426D8AB30ACE /* Views/SetupViews.swift */; };
+		4EFD1D5400044BC08D9035E9 /* Views/Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5DA6EFC37B4FA1AA4E7988 /* Views/Theme.swift */; };
+		7FF470AE586F477CBA2FFBA8 /* Native/QRScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D38CAC3284564D4289059CE9 /* Native/QRScannerView.swift */; };
+		8A6C879BEFDC42D1A96AA9C5 /* Views/PlayViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A770E207D8F94BD5B7A0D625 /* Views/PlayViews.swift */; };
+		A07E02CD08204F679087C3F0 /* Views/OwlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C237578C75F84F9FB25A1993 /* Views/OwlView.swift */; };
+		A2C99BED3D9E40DE819E8C43 /* Native/QRCodeImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5DEDC39FCE341E39FB70444 /* Native/QRCodeImage.swift */; };
+		B96AF66793D745DABEBAC8CC /* Views/QRCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B42793D6134BCC9D90139D /* Views/QRCardView.swift */; };
+		C4B199E7EF3448BAB576987E /* HuntEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1174177E10241C18A49B617 /* HuntEngineTests.swift */; };
+		E5F7E904AFC44DC0BD1F96A5 /* Engine/TreasureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B327EA576C694E25B783E1B6 /* Engine/TreasureCatalog.swift */; };
+		FBA2C0165405436189E08F5C /* Views/RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B78AC6A417F48B6987B8681 /* Views/RootView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
 		0DE19C41805B4840B5B7ED12 /* Native/ChestSceneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/ChestSceneView.swift; sourceTree = "<group>"; };
-		F5DEDC39FCE341E39FB70444 /* Native/QRCodeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/QRCodeImage.swift; sourceTree = "<group>"; };
-		D38CAC3284564D4289059CE9 /* Native/QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/QRScannerView.swift; sourceTree = "<group>"; };
-		C62B268251964857B1332901 /* Native/SpeechPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/SpeechPlayer.swift; sourceTree = "<group>"; };
-		FB2352CCB9E241CE92D740EB /* Store/GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store/GameStore.swift; sourceTree = "<group>"; };
-		899AF2EDFFD44CB6B14015ED /* TakaraSagashiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakaraSagashiApp.swift; sourceTree = "<group>"; };
 		2B9C6633790A438DB9626E20 /* Views/HoldUnlockButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/HoldUnlockButton.swift; sourceTree = "<group>"; };
-		C237578C75F84F9FB25A1993 /* Views/OwlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/OwlView.swift; sourceTree = "<group>"; };
-		A770E207D8F94BD5B7A0D625 /* Views/PlayViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/PlayViews.swift; sourceTree = "<group>"; };
-		88B42793D6134BCC9D90139D /* Views/QRCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/QRCardView.swift; sourceTree = "<group>"; };
-		6B78AC6A417F48B6987B8681 /* Views/RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/RootView.swift; sourceTree = "<group>"; };
-		662EB3FD61E3426D8AB30ACE /* Views/SetupViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SetupViews.swift; sourceTree = "<group>"; };
 		5A5DA6EFC37B4FA1AA4E7988 /* Views/Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Theme.swift; sourceTree = "<group>"; };
+		662EB3FD61E3426D8AB30ACE /* Views/SetupViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SetupViews.swift; sourceTree = "<group>"; };
+		6A78BD00A82E43D2AAE47720 /* TakaraSagashi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TakaraSagashi.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6B78AC6A417F48B6987B8681 /* Views/RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/RootView.swift; sourceTree = "<group>"; };
+		88B42793D6134BCC9D90139D /* Views/QRCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/QRCardView.swift; sourceTree = "<group>"; };
+		899AF2EDFFD44CB6B14015ED /* TakaraSagashiApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakaraSagashiApp.swift; sourceTree = "<group>"; };
+		A770E207D8F94BD5B7A0D625 /* Views/PlayViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/PlayViews.swift; sourceTree = "<group>"; };
+		AA0E8C1A7FAB4521B2CE2B58 /* Engine/GameModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine/GameModels.swift; sourceTree = "<group>"; };
+		B327EA576C694E25B783E1B6 /* Engine/TreasureCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine/TreasureCatalog.swift; sourceTree = "<group>"; };
+		C237578C75F84F9FB25A1993 /* Views/OwlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/OwlView.swift; sourceTree = "<group>"; };
+		C62B268251964857B1332901 /* Native/SpeechPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/SpeechPlayer.swift; sourceTree = "<group>"; };
+		D38CAC3284564D4289059CE9 /* Native/QRScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/QRScannerView.swift; sourceTree = "<group>"; };
+		D8A1821F566949B9824CA7A6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DC10E52CBC3047CDAE7507EB /* Engine/HuntEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Engine/HuntEngine.swift; sourceTree = "<group>"; };
+		DEB2D83285FC4361833B626A /* TakaraSagashiTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TakaraSagashiTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1174177E10241C18A49B617 /* HuntEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuntEngineTests.swift; sourceTree = "<group>"; };
-		D728825F378E4C5CA95FC1B6 = {
+		F5DEDC39FCE341E39FB70444 /* Native/QRCodeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/QRCodeImage.swift; sourceTree = "<group>"; };
+		FB2352CCB9E241CE92D740EB /* Store/GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store/GameStore.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXContainerItemProxy section */
+		C8E1A2B04F1B4C6A9D3E7F10 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = ECE36884EDE943D0889910EF /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8899885A17AA4312B0BDBCDF;
+			remoteInfo = TakaraSagashi;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		05E76AC0F7534CCE8F2337DD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		117AD67F25024A95B5677160 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				90F45412065444469E86B74C /* TakaraSagashi */,
-				914BA6C504B9432C885500B2 /* TakaraSagashiTests */,
-				117AD67F25024A95B5677160 /* Products */,
+				6A78BD00A82E43D2AAE47720 /* TakaraSagashi.app */,
+				DEB2D83285FC4361833B626A /* TakaraSagashiTests.xctest */,
 			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		90F45412065444469E86B74C /* TakaraSagashi */ = {
@@ -84,60 +112,33 @@
 			path = TakaraSagashiTests;
 			sourceTree = "<group>";
 		};
-		117AD67F25024A95B5677160 /* Products */ = {
+		D728825F378E4C5CA95FC1B6 = {
 			isa = PBXGroup;
 			children = (
-				6A78BD00A82E43D2AAE47720 /* TakaraSagashi.app */,
-				DEB2D83285FC4361833B626A /* TakaraSagashiTests.xctest */,
+				90F45412065444469E86B74C /* TakaraSagashi */,
+				914BA6C504B9432C885500B2 /* TakaraSagashiTests */,
+				117AD67F25024A95B5677160 /* Products */,
 			);
-			name = Products;
 			sourceTree = "<group>";
 		};
-		D603E367172B4B269329D11A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				14C95C308B9A4751B546544F /* GameModels.swift in Sources */,
-				2E3A7D13F9E945108EC776AA /* HuntEngine.swift in Sources */,
-				E5F7E904AFC44DC0BD1F96A5 /* TreasureCatalog.swift in Sources */,
-				1837E72329D0485698A1E3A5 /* ChestSceneView.swift in Sources */,
-				A2C99BED3D9E40DE819E8C43 /* QRCodeImage.swift in Sources */,
-				7FF470AE586F477CBA2FFBA8 /* QRScannerView.swift in Sources */,
-				193229AE22B94B43A3D9DA2F /* SpeechPlayer.swift in Sources */,
-				112CF6C53992492D862F32AF /* GameStore.swift in Sources */,
-				363CA02EC385447BA477D17B /* TakaraSagashiApp.swift in Sources */,
-				003A167B59CC4E3A84DCEDA6 /* HoldUnlockButton.swift in Sources */,
-				A07E02CD08204F679087C3F0 /* OwlView.swift in Sources */,
-				8A6C879BEFDC42D1A96AA9C5 /* PlayViews.swift in Sources */,
-				B96AF66793D745DABEBAC8CC /* QRCardView.swift in Sources */,
-				FBA2C0165405436189E08F5C /* RootView.swift in Sources */,
-				4A4973BF0B714784B029CB39 /* SetupViews.swift in Sources */,
-				4EFD1D5400044BC08D9035E9 /* Theme.swift in Sources */,
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3E978244E0374C97B3A77A19 /* TakaraSagashiTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EAC3CD269E4C47899614EF45 /* Build configuration list for PBXNativeTarget "TakaraSagashiTests" */;
+			buildPhases = (
+				EB666A64084F47D093290B49 /* Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		EB666A64084F47D093290B49 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C4B199E7EF3448BAB576987E /* HuntEngineTests.swift in Sources */,
+			buildRules = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98DC3DD0FD6243349DD48969 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3B3AF1C687E54ACDAA38F860 /* Assets.xcassets in Resources */,
+			dependencies = (
+				A1B2C3D4E5F64789AB0C1D2E /* PBXTargetDependency */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		05E76AC0F7534CCE8F2337DD /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
+			name = TakaraSagashiTests;
+			productName = TakaraSagashiTests;
+			productReference = DEB2D83285FC4361833B626A /* TakaraSagashiTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8899885A17AA4312B0BDBCDF /* TakaraSagashi */ = {
 			isa = PBXNativeTarget;
@@ -156,21 +157,9 @@
 			productReference = 6A78BD00A82E43D2AAE47720 /* TakaraSagashi.app */;
 			productType = "com.apple.product-type.application";
 		};
-		3E978244E0374C97B3A77A19 /* TakaraSagashiTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EAC3CD269E4C47899614EF45 /* Build configuration list for PBXNativeTarget "TakaraSagashiTests" */;
-			buildPhases = (
-				EB666A64084F47D093290B49 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = TakaraSagashiTests;
-			productName = TakaraSagashiTests;
-			productReference = DEB2D83285FC4361833B626A /* TakaraSagashiTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
 		ECE36884EDE943D0889910EF /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
@@ -178,12 +167,12 @@
 				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
-					8899885A17AA4312B0BDBCDF = {
-						CreatedOnToolsVersion = 26.0;
-					};
 					3E978244E0374C97B3A77A19 = {
 						CreatedOnToolsVersion = 26.0;
 						TestTargetID = 8899885A17AA4312B0BDBCDF;
+					};
+					8899885A17AA4312B0BDBCDF = {
+						CreatedOnToolsVersion = 26.0;
 					};
 				};
 			};
@@ -205,25 +194,112 @@
 				3E978244E0374C97B3A77A19 /* TakaraSagashiTests */,
 			);
 		};
-		F04414B0B4A048BFBD1A9038 /* Debug */ = {
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		98DC3DD0FD6243349DD48969 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3B3AF1C687E54ACDAA38F860 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D603E367172B4B269329D11A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				14C95C308B9A4751B546544F /* Engine/GameModels.swift in Sources */,
+				2E3A7D13F9E945108EC776AA /* Engine/HuntEngine.swift in Sources */,
+				E5F7E904AFC44DC0BD1F96A5 /* Engine/TreasureCatalog.swift in Sources */,
+				1837E72329D0485698A1E3A5 /* Native/ChestSceneView.swift in Sources */,
+				A2C99BED3D9E40DE819E8C43 /* Native/QRCodeImage.swift in Sources */,
+				7FF470AE586F477CBA2FFBA8 /* Native/QRScannerView.swift in Sources */,
+				193229AE22B94B43A3D9DA2F /* Native/SpeechPlayer.swift in Sources */,
+				112CF6C53992492D862F32AF /* Store/GameStore.swift in Sources */,
+				363CA02EC385447BA477D17B /* TakaraSagashiApp.swift in Sources */,
+				003A167B59CC4E3A84DCEDA6 /* Views/HoldUnlockButton.swift in Sources */,
+				A07E02CD08204F679087C3F0 /* Views/OwlView.swift in Sources */,
+				8A6C879BEFDC42D1A96AA9C5 /* Views/PlayViews.swift in Sources */,
+				B96AF66793D745DABEBAC8CC /* Views/QRCardView.swift in Sources */,
+				FBA2C0165405436189E08F5C /* Views/RootView.swift in Sources */,
+				4A4973BF0B714784B029CB39 /* Views/SetupViews.swift in Sources */,
+				4EFD1D5400044BC08D9035E9 /* Views/Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EB666A64084F47D093290B49 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4B199E7EF3448BAB576987E /* HuntEngineTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A1B2C3D4E5F64789AB0C1D2E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8899885A17AA4312B0BDBCDF /* TakaraSagashi */;
+			targetProxy = C8E1A2B04F1B4C6A9D3E7F10 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		3CA062474F8E412EB98BC627 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_TESTABILITY = YES;
-				GCC_DYNAMIC_NO_PIC = NO;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = iphoneos;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cluegame.takarasagashi.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TakaraSagashi.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TakaraSagashi";
 			};
-			name = Debug;
+			name = Release;
+		};
+		4C80CBC1B54044DAB8AC45A7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UMS95NYGUN;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "たからさがし";
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_NSCameraUsageDescription = "かくしたQRコードを読みとって、つぎのヒントを見つけるためにカメラを使います。";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.cluegame.takarasagashi;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
 		};
 		61214F51265D4A57BAB180EA /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -250,6 +326,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
+				DEVELOPMENT_TEAM = UMS95NYGUN;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "たからさがし";
@@ -261,7 +338,10 @@
 				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cluegame.takarasagashi;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -270,38 +350,9 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				ENABLE_TESTABILITY = YES;
 			};
 			name = Debug;
-		};
-		4C80CBC1B54044DAB8AC45A7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "たからさがし";
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_NSCameraUsageDescription = "かくしたQRコードを読みとって、つぎのヒントを見つけるためにカメラを使います。";
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UIRequiresFullScreen = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cluegame.takarasagashi;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
 		};
 		EC08BF4055F24F17B299165C /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -320,23 +371,29 @@
 			};
 			name = Debug;
 		};
-		3CA062474F8E412EB98BC627 /* Release */ = {
+		F04414B0B4A048BFBD1A9038 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.cluegame.takarasagashi.tests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TakaraSagashi.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TakaraSagashi";
 			};
-			name = Release;
+			name = Debug;
 		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
 		08B50D86BBB7402582F98E61 /* Build configuration list for PBXProject "TakaraSagashi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -364,6 +421,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+/* End XCConfigurationList section */
 	};
 	rootObject = ECE36884EDE943D0889910EF /* Project object */;
 }

@@ -13,6 +13,7 @@ enum Screen: String, Codable, Sendable {
     case setupCount
     case setupStage
     case setupReady
+    case qrDeck
     case play
     case scan
     case clear
@@ -22,7 +23,6 @@ enum Screen: String, Codable, Sendable {
 struct Stage: Codable, Equatable, Sendable, Identifiable {
     var index: Int
     var hint: String
-    var token: String
 
     var id: Int { index }
 }
@@ -37,9 +37,7 @@ struct Hunt: Codable, Equatable, Sendable, Identifiable {
 }
 
 struct ParsedQR: Equatable, Sendable {
-    var huntId: String
     var stageIndex: Int
-    var token: String
 }
 
 enum ScanResult: Equatable, Sendable {
@@ -47,6 +45,7 @@ enum ScanResult: Equatable, Sendable {
     case cleared
     case wrongOrder(expected: Int, scanned: Int)
     case alreadyFound(scanned: Int)
+    case unused(scanned: Int)
     case unknown
     case alreadyCleared
     case notPlaying

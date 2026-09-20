@@ -6,12 +6,12 @@ enum HuntEngine {
     static let maxHintLength = 80
     static let qrPrefix = "cluehunt:v1"
 
-    static func createHunt(stageCount: Int, tokenFactory: () -> String = { randomToken() }) throws -> Hunt {
+    static func createHunt(stageCount: Int) throws -> Hunt {
         guard (minStages...maxStages).contains(stageCount) else {
             throw HuntError.invalidStageCount
         }
         let stages = (1...stageCount).map { index in
-            Stage(index: index, hint: "", token: "\(tokenFactory())\(index)")
+            Stage(index: index, hint: "")
         }
         return Hunt(
             id: UUID().uuidString,
@@ -62,23 +62,23 @@ enum HuntEngine {
         return next
     }
 
-    static func encodeQRPayload(_ hunt: Hunt, stageIndex: Int) throws -> String {
-        guard let stage = hunt.stages.first(where: { $0.index == stageIndex }) else {
+    static func encodeQRPayload(stageIndex: Int) throws -> String {
+        guard (minStages...maxStages).contains(stageIndex) else {
             throw HuntError.missingStage
         }
-        return "\(qrPrefix):\(hunt.id):\(stageIndex):\(stage.token)"
+        return "\(qrPrefix):\(stageIndex)"
     }
 
     static func parseQRPayload(_ raw: String) -> ParsedQR? {
-        let parts = raw.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: ":", omittingEmptySubsequences: false).map(String.init)
-        guard parts.count == 5 else { return nil }
-        guard parts[0] == "cluehunt", parts[1] == "v1", !parts[2].isEmpty, !parts[4].isEmpty else {
+        let parts = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+            .split(separator: ":", omittingEmptySubsequences: false)
+            .map(String.init)
+        guard parts.count == 3 else { return nil }
+        guard parts[0] == "cluehunt", parts[1] == "v1" else { return nil }
+        guard let stageIndex = Int(parts[2]), (minStages...maxStages).contains(stageIndex) else {
             return nil
         }
-        guard let stageIndex = Int(parts[3]), (minStages...maxStages).contains(stageIndex) else {
-            return nil
-        }
-        return ParsedQR(huntId: parts[2], stageIndex: stageIndex, token: parts[4])
+        return ParsedQR(stageIndex: stageIndex)
     }
 
     static func currentHint(_ hunt: Hunt) -> String {
@@ -92,12 +92,11 @@ enum HuntEngine {
         if hunt.status != .playing {
             return (hunt, .notPlaying)
         }
-        guard let parsed = parseQRPayload(payload), parsed.huntId == hunt.id else {
+        guard let parsed = parseQRPayload(payload) else {
             return (hunt, .unknown)
         }
-        guard let stage = hunt.stages.first(where: { $0.index == parsed.stageIndex }),
-              stage.token == parsed.token else {
-            return (hunt, .unknown)
+        if parsed.stageIndex > hunt.stageCount {
+            return (hunt, .unused(scanned: parsed.stageIndex))
         }
         if parsed.stageIndex > hunt.currentStageIndex {
             return (hunt, .wrongOrder(expected: hunt.currentStageIndex, scanned: parsed.stageIndex))
@@ -116,10 +115,6 @@ enum HuntEngine {
         advanced.currentStageIndex = nextStage
         return (advanced, .advanced(nextStage: nextStage, nextHint: nextHint))
     }
-
-    static func randomToken() -> String {
-        String(UUID().uuidString.replacingOccurrences(of: "-", with: "").prefix(10))
-    }
 }
 
 extension ScanResult {
@@ -133,6 +128,8 @@ extension ScanResult {
             "まだだよ。いまは\(expected)ばんをさがしてね"
         case .alreadyFound:
             "それはもうみつけたよ。つぎをさがしてね"
+        case .unused:
+            "このぼうけんでは使わないカードだよ"
         case .unknown:
             "このぼうけんのQRじゃないみたい"
         case .alreadyCleared:
@@ -148,6 +145,7 @@ extension ScanResult {
         case .cleared: "クリア！"
         case .wrongOrder: "まだだよ"
         case .alreadyFound: "もうみたよ"
+        case .unused: "つかわないよ"
         case .unknown: "あれれ？"
         case .alreadyCleared: "おわりだよ"
         case .notPlaying: "まってね"

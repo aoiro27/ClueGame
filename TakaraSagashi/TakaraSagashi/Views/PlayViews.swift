@@ -2,6 +2,7 @@ import SwiftUI
 
 struct PlayView: View {
     @Environment(GameStore.self) private var store
+    @State private var hintAppeared = false
 
     var body: some View {
         VStack(spacing: 18) {
@@ -9,34 +10,42 @@ struct PlayView: View {
                 HoldUnlockButton(title: "おとな") { store.goTo(.parent) }
                 Spacer()
                 if let hunt = store.hunt {
-                    HStack(spacing: 8) {
-                        ForEach(1...hunt.stageCount, id: \.self) { index in
-                            Text("\(index)")
-                                .font(.system(size: 14, weight: .heavy, design: .rounded))
-                                .foregroundStyle(index <= hunt.currentStageIndex ? Palette.ink : Palette.muted)
-                                .frame(width: 36, height: 36)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 10)
-                                        .fill(index <= hunt.currentStageIndex ? Palette.lantern : Color(red: 0.23, green: 0.16, blue: 0.09))
-                                )
-                        }
-                    }
+                    QuestProgressView(stageCount: hunt.stageCount, currentStage: hunt.currentStageIndex)
+                        .frame(maxWidth: 230)
                 }
             }
-            OwlView(mood: .talk, size: 150)
+            OwlView(mood: .talk, size: 142)
+                .overlay(alignment: .bottomTrailing) {
+                    Image(systemName: "speaker.wave.3.fill")
+                        .foregroundStyle(Palette.lanternHot)
+                        .padding(11)
+                        .background(Palette.dusk, in: Circle())
+                        .overlay(Circle().stroke(Palette.lantern.opacity(0.6), lineWidth: 1))
+                }
             if let hunt = store.hunt {
                 Text("\(hunt.currentStageIndex)ばんめのヒント")
                     .font(.system(size: 13, weight: .bold, design: .rounded))
                     .foregroundStyle(Palette.lantern)
                     .tracking(3)
-                Text(HuntEngine.currentHint(hunt))
-                    .font(.system(size: 28, weight: .heavy, design: .rounded))
-                    .foregroundStyle(Palette.ink)
-                    .multilineTextAlignment(.center)
-                    .padding(24)
-                    .frame(maxWidth: .infinity)
-                    .background(Palette.parchment)
-                    .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+                VStack(spacing: 12) {
+                    Image(systemName: "quote.opening")
+                        .font(.title2.weight(.black))
+                        .foregroundStyle(Palette.lantern.opacity(0.75))
+                    Text(HuntEngine.currentHint(hunt))
+                        .font(.system(size: 28, weight: .heavy, design: .rounded))
+                        .foregroundStyle(Palette.ink)
+                        .multilineTextAlignment(.center)
+                    Image(systemName: "quote.closing")
+                        .font(.title2.weight(.black))
+                        .foregroundStyle(Palette.lantern.opacity(0.75))
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity)
+                .background(Palette.parchment, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+                .overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.lantern.opacity(0.45), lineWidth: 2))
+                .shadow(color: .black.opacity(0.25), radius: 18, y: 10)
+                .scaleEffect(hintAppeared ? 1 : 0.93)
+                .opacity(hintAppeared ? 1 : 0)
             }
             Button("もういちどきく") {
                 if let hunt = store.hunt {
@@ -50,7 +59,12 @@ struct PlayView: View {
         }
         .padding(24)
         .onAppear { speakHint() }
-        .onChange(of: store.hunt?.currentStageIndex) { _, _ in speakHint() }
+        .onAppear { withAnimation(.spring(response: 0.55, dampingFraction: 0.7)) { hintAppeared = true } }
+        .onChange(of: store.hunt?.currentStageIndex) { _, _ in
+            hintAppeared = false
+            withAnimation(.spring(response: 0.55, dampingFraction: 0.7)) { hintAppeared = true }
+            speakHint()
+        }
         .onDisappear { SpeechPlayer.shared.stop() }
     }
 
@@ -87,22 +101,9 @@ struct ScanView: View {
                 }
                 .padding()
                 Spacer()
-                RoundedRectangle(cornerRadius: 28)
-                    .stroke(Palette.lantern, lineWidth: 4)
-                    .frame(width: 240, height: 240)
-                    .shadow(color: Palette.lantern.opacity(0.4), radius: 12)
+                ScannerReticle()
+                    .frame(width: 250, height: 250)
                 Spacer()
-                if showPractice, let hunt = store.hunt {
-                    HStack {
-                        ForEach(hunt.stages) { stage in
-                            if let payload = try? HuntEngine.encodeQRPayload(hunt, stageIndex: stage.index) {
-                                Button("\(stage.index)ばんをよむ") { handle(payload) }
-                                    .buttonStyle(SecondaryButtonStyle())
-                            }
-                        }
-                    }
-                    .padding()
-                }
                 if let result = store.scanResult, result != .cleared, !isAdvanced(result) {
                     VStack(spacing: 10) {
                         OwlView(mood: .oops, size: 80)
@@ -114,21 +115,13 @@ struct ScanView: View {
                             .buttonStyle(PrimaryButtonStyle())
                     }
                     .padding()
-                    .background(Palette.night.opacity(0.92))
-                    .clipShape(RoundedRectangle(cornerRadius: 28))
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28))
+                    .overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.lantern.opacity(0.55), lineWidth: 2))
                     .padding()
                 }
             }
         }
         .onDisappear { SpeechPlayer.shared.stop() }
-    }
-
-    private var showPractice: Bool {
-        #if targetEnvironment(simulator)
-        true
-        #else
-        store.practiceMode
-        #endif
     }
 
     private func isAdvanced(_ result: ScanResult) -> Bool {
@@ -145,6 +138,31 @@ struct ScanView: View {
     }
 }
 
+private struct ScannerReticle: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 30).stroke(.white.opacity(0.18), lineWidth: 1)
+            ForEach([0.0, 90.0, 180.0, 270.0], id: \.self) { angle in
+                VStack(spacing: 0) {
+                    HStack(spacing: 0) {
+                        RoundedRectangle(cornerRadius: 3).fill(Palette.lantern).frame(width: 52, height: 6)
+                        Spacer()
+                    }
+                    HStack(spacing: 0) {
+                        RoundedRectangle(cornerRadius: 3).fill(Palette.lantern).frame(width: 6, height: 52)
+                        Spacer()
+                    }
+                    Spacer()
+                }
+                .rotationEffect(.degrees(angle))
+            }
+            Capsule().fill(Palette.lanternHot.opacity(0.75)).frame(width: 190, height: 2)
+                .shadow(color: Palette.lantern, radius: 8)
+        }
+        .shadow(color: Palette.lantern.opacity(0.45), radius: 14)
+    }
+}
+
 struct ClearView: View {
     @Environment(GameStore.self) private var store
     @State private var open = false
@@ -155,6 +173,7 @@ struct ClearView: View {
             ChestSceneView(hue: treasure.hue, open: open)
                 .frame(height: 280)
                 .clipShape(RoundedRectangle(cornerRadius: 32))
+                .overlay(RoundedRectangle(cornerRadius: 32).stroke(Palette.lantern.opacity(0.7), lineWidth: 2))
             OwlView(mood: .yay, size: 90)
             Text("ぼうけんクリア")
                 .font(.system(size: 13, weight: .bold, design: .rounded))
@@ -163,7 +182,8 @@ struct ClearView: View {
             Text("たからを GET！")
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .foregroundStyle(.white)
-            VStack(spacing: 8) {
+            GlassPanel {
+                VStack(spacing: 8) {
                 TreasureArtView(treasure: treasure, size: 110)
                 Text(treasure.rarity.label)
                     .foregroundStyle(Palette.lantern)
@@ -173,12 +193,10 @@ struct ClearView: View {
                 Text(treasure.flavor)
                     .foregroundStyle(Palette.muted)
                     .multilineTextAlignment(.center)
+                }
+                .padding()
+                .frame(maxWidth: .infinity)
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(.white.opacity(0.12))
-            .overlay(RoundedRectangle(cornerRadius: 28).stroke(Palette.lantern.opacity(0.28), lineWidth: 2))
-            .clipShape(RoundedRectangle(cornerRadius: 28))
             if let hunt = store.hunt {
                 Text("QRを\(hunt.stageCount)まい、ぜんぶみつけたよ")
                     .foregroundStyle(Palette.muted)
@@ -215,7 +233,8 @@ struct CollectionView: View {
                 .frame(maxWidth: .infinity)
             } else {
                 if let selected = selectedTreasure(owned: owned) {
-                    VStack(spacing: 8) {
+                    GlassPanel {
+                        VStack(spacing: 8) {
                         TreasureArtView(treasure: selected, size: 120)
                         Text(selected.rarity.label)
                             .foregroundStyle(Palette.lantern)
@@ -228,11 +247,10 @@ struct CollectionView: View {
                             SpeechPlayer.shared.speak("\(selected.name)。\(selected.flavor)")
                         }
                         .buttonStyle(SecondaryButtonStyle())
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
                     }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(.white.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 28))
                 }
                 LazyVGrid(columns: [GridItem(.adaptive(minimum: 96), spacing: 10)], spacing: 10) {
                     ForEach(TreasureCatalog.all) { treasure in
@@ -255,8 +273,7 @@ struct CollectionView: View {
                             }
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity, minHeight: 100)
-                            .background(.white.opacity(got ? 0.12 : 0.06))
-                            .clipShape(RoundedRectangle(cornerRadius: 18))
+                            .background(.ultraThinMaterial.opacity(got ? 1 : 0.25), in: RoundedRectangle(cornerRadius: 18))
                             .overlay {
                                 if selectedId == treasure.id {
                                     RoundedRectangle(cornerRadius: 18).stroke(Palette.lantern, lineWidth: 2)
