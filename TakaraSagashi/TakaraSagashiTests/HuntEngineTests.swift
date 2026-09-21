@@ -1,4 +1,5 @@
 import Foundation
+import AVFoundation
 import SwiftUI
 import Testing
 @testable import TakaraSagashi
@@ -163,5 +164,135 @@ struct TreasureCatalogTests {
         let a = TreasureCatalog.awardTreasure(collection: [], huntId: "same")
         let b = TreasureCatalog.awardTreasure(collection: [a], huntId: "same")
         #expect(a.id == b.id)
+    }
+}
+
+struct DiscoveryFlowTests {
+    @Test @MainActor func celebrationLocksScannerAndAwardIsSavedOnce() throws {
+        let key = "cluegame-native-v2"
+        let saved = UserDefaults.standard.data(forKey: key)
+        defer {
+            if let saved { UserDefaults.standard.set(saved, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
+        let store = GameStore()
+        store.hunt = try readyHunt(stageCount: 2)
+        store.collection = []
+        store.openScan()
+        let first = try HuntEngine.encodeQRPayload(stageIndex: 1)
+        let last = try HuntEngine.encodeQRPayload(stageIndex: 2)
+        _ = store.scanPayload(first)
+        #expect(store.screen == .scan)
+        #expect(store.hunt?.currentStageIndex == 2)
+        #expect(store.scanPayload(last) == nil)
+        #expect(store.collection.isEmpty)
+        store.continueAfterDiscovery()
+        #expect(store.screen == .play)
+        #expect(store.scanResult == nil)
+        store.openScan()
+        #expect(store.scanPayload(last) == .cleared)
+        #expect(store.screen == .clear)
+        #expect(store.collection.count == 1)
+        #expect(store.scanPayload(last) == nil)
+        #expect(store.collection.count == 1)
+        let restored = GameStore()
+        #expect(restored.screen == .clear)
+        #expect(restored.collection.count == 1)
+        #expect(restored.awardedTreasure.id == store.awardedTreasure.id)
+    }
+}
+
+struct ScreenTransitionRegressionTests {
+    @Test @MainActor func departingScreenCannotStopNewHint() {
+        let speech = SpeechPlayer()
+        let scanner = UUID()
+        let hint = UUID()
+        speech.speak("つぎのヒントです", owner: hint)
+        speech.stop(owner: scanner)
+        #expect(speech.currentOwner == hint)
+        speech.stop(owner: hint)
+        #expect(speech.currentOwner == nil)
+        speech.speak("ヒントです", owner: hint)
+        speech.stop()
+        #expect(speech.currentOwner == nil)
+    }
+
+    @Test @MainActor func delayedInputStaysWithItsOriginalCard() throws {
+        let key = "cluegame-native-v2"
+        let saved = UserDefaults.standard.data(forKey: key)
+        defer {
+            if let saved { UserDefaults.standard.set(saved, forKey: key) }
+            else { UserDefaults.standard.removeObject(forKey: key) }
+        }
+        let store = GameStore()
+        store.beginSetup()
+        store.chooseStageCount(3)
+        let huntID = try #require(store.hunt?.id)
+        store.updateHint("ソファのした", huntID: huntID, stageIndex: 1)
+        store.nextSetupStage()
+        #expect(store.currentStage?.hint == "")
+        // A Japanese keyboard may commit the old field after navigation.
+        store.updateHint("ソファの下", huntID: huntID, stageIndex: 1)
+        #expect(store.currentStage?.hint == "")
+        store.updateHint("まどのそば", huntID: huntID, stageIndex: 2)
+        store.prevSetupStage()
+        #expect(store.currentStage?.hint == "ソファの下")
+        store.nextSetupStage()
+        #expect(store.currentStage?.hint == "まどのそば")
+        store.nextSetupStage()
+        #expect(store.currentStage?.hint == "")
+        store.beginSetup()
+        store.chooseStageCount(2)
+        store.updateHint("古い入力", huntID: huntID, stageIndex: 1)
+        #expect(store.currentStage?.hint == "")
+    }
+}
+
+struct AudioRecoveryTests {
+    @MainActor private func interruption(_ type: AVAudioSession.InterruptionType, suspended: Bool = false) -> Notification {
+        Notification(name: AVAudioSession.interruptionNotification, userInfo: [
+            AVAudioSessionInterruptionTypeKey: type.rawValue,
+            AVAudioSessionInterruptionWasSuspendedKey: suspended
+        ])
+    }
+
+    @Test @MainActor func unlockRecoversWithoutAnEndedNotification() {
+        let audio = AudioDirector(activateSession: {})
+        audio.setActive(false)
+        audio.interruption(interruption(.began))
+        #expect(!audio.prepareForPlayback())
+        audio.setActive(true)
+        #expect(audio.prepareForPlayback())
+        audio.interruption(interruption(.began, suspended: true))
+        #expect(audio.prepareForPlayback())
+        audio.setActive(false)
+        audio.interruption(interruption(.ended))
+        #expect(!audio.prepareForPlayback())
+        audio.setActive(true)
+        #expect(audio.prepareForPlayback())
+    }
+
+    @Test @MainActor func endedWithoutResumeFlagAndMusicOffStillAllowsAudio() {
+        var activations = 0
+        let audio = AudioDirector(activateSession: { activations += 1 })
+        audio.configure(music: false, effects: true)
+        audio.interruption(interruption(.began))
+        let before = activations
+        #expect(!audio.prepareForPlayback())
+        #expect(activations == before)
+        audio.interruption(interruption(.ended))
+        #expect(activations > before)
+        #expect(audio.prepareForPlayback())
+    }
+
+    @Test @MainActor func activationFailureDoesNotPermanentlyMuteAudio() {
+        var shouldFail = true
+        let audio = AudioDirector(activateSession: {
+            if shouldFail { throw NSError(domain: "AudioRecoveryTest", code: 1) }
+        })
+        audio.setActive(true)
+        #expect(!audio.prepareForPlayback())
+        shouldFail = false
+        #expect(audio.prepareForPlayback())
     }
 }

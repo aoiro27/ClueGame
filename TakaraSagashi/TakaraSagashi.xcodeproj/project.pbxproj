@@ -25,6 +25,9 @@
 		C4B199E7EF3448BAB576987E /* HuntEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1174177E10241C18A49B617 /* HuntEngineTests.swift */; };
 		E5F7E904AFC44DC0BD1F96A5 /* Engine/TreasureCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B327EA576C694E25B783E1B6 /* Engine/TreasureCatalog.swift */; };
 		FBA2C0165405436189E08F5C /* Views/RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B78AC6A417F48B6987B8681 /* Views/RootView.swift */; };
+		ABCDEF100000000000000001 = {isa = PBXBuildFile; fileRef = ABCDEF000000000000000001; };
+		ABCDEF100000000000000002 = {isa = PBXBuildFile; fileRef = ABCDEF000000000000000002; };
+		ABCDEF100000000000000003 = {isa = PBXBuildFile; fileRef = ABCDEF000000000000000003; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +51,9 @@
 		E1174177E10241C18A49B617 /* HuntEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HuntEngineTests.swift; sourceTree = "<group>"; };
 		F5DEDC39FCE341E39FB70444 /* Native/QRCodeImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/QRCodeImage.swift; sourceTree = "<group>"; };
 		FB2352CCB9E241CE92D740EB /* Store/GameStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Store/GameStore.swift; sourceTree = "<group>"; };
+		ABCDEF000000000000000001 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Native/AudioDirector.swift; sourceTree = "<group>"; };
+		ABCDEF000000000000000002 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/CelebrationView.swift; sourceTree = "<group>"; };
+		ABCDEF000000000000000003 = {isa = PBXFileReference; lastKnownFileType = folder; path = Audio; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +90,9 @@
 			isa = PBXGroup;
 			children = (
 				AA0E8C1A7FAB4521B2CE2B58 /* Engine/GameModels.swift */,
+				ABCDEF000000000000000003,
+				ABCDEF000000000000000002,
+				ABCDEF000000000000000001,
 				DC10E52CBC3047CDAE7507EB /* Engine/HuntEngine.swift */,
 				B327EA576C694E25B783E1B6 /* Engine/TreasureCatalog.swift */,
 				0DE19C41805B4840B5B7ED12 /* Native/ChestSceneView.swift */,
@@ -202,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3B3AF1C687E54ACDAA38F860 /* Assets.xcassets in Resources */,
+				ABCDEF100000000000000003,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,6 +223,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				14C95C308B9A4751B546544F /* Engine/GameModels.swift in Sources */,
+				ABCDEF100000000000000002,
+				ABCDEF100000000000000001,
 				2E3A7D13F9E945108EC776AA /* Engine/HuntEngine.swift in Sources */,
 				E5F7E904AFC44DC0BD1F96A5 /* Engine/TreasureCatalog.swift in Sources */,
 				1837E72329D0485698A1E3A5 /* Native/ChestSceneView.swift in Sources */,

@@ -129,9 +129,9 @@ extension ScanResult {
         case .alreadyFound:
             "それはもうみつけたよ。つぎをさがしてね"
         case .unused:
-            "このぼうけんでは使わないカードだよ"
+            "このぼうけんではつかわないカードだよ"
         case .unknown:
-            "このぼうけんのQRじゃないみたい"
+            "このぼうけんのカードじゃないみたい"
         case .alreadyCleared:
             "このぼうけんはもうクリアだよ"
         case .notPlaying:

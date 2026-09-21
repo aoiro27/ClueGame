@@ -94,7 +94,7 @@ struct ChestSceneView: UIViewRepresentable {
         sparkles.acceleration = SCNVector3(0, -0.25, 0)
         sparkles.blendMode = .additive
         sparkles.particleColor = UIColor(red: 1, green: 0.86, blue: 0.34, alpha: 1)
-        sparkles.particleImage = UIImage(systemName: "sparkle")
+        sparkles.particleImage = UIImage(systemName: "sparkle")?.withTintColor(.white, renderingMode: .alwaysOriginal)
         let sparkleNode = SCNNode()
         sparkleNode.name = "sparkles"
         sparkleNode.position = SCNVector3(0, 1.12, 0)

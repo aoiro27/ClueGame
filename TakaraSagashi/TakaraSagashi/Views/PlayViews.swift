@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct PlayView: View {
+    @State private var speechOwner = UUID()
     @Environment(GameStore.self) private var store
     @State private var hintAppeared = false
 
@@ -52,11 +53,20 @@ struct PlayView: View {
                 .opacity(hintAppeared ? 1 : 0)
             }
             Button {
-                if let hunt = store.hunt { SpeechPlayer.shared.speak(HuntEngine.currentHint(hunt)) }
+                if let hunt = store.hunt { SpeechPlayer.shared.speak(HuntEngine.currentHint(hunt), owner: speechOwner) }
             } label: { Label("もういちどきく", systemImage: "speaker.wave.2.fill") }
             .buttonStyle(SecondaryButtonStyle())
-            Button { store.openScan() } label: { Label("QRをよむ", systemImage: "qrcode.viewfinder") }
-                .buttonStyle(PrimaryButtonStyle())
+            Button { store.openScan() } label: {
+                VStack(spacing: 8) {
+                    Image(systemName: "camera.fill")
+                        .font(.system(size: 42, weight: .bold))
+                        .accessibilityHidden(true)
+                    Text("カードをうつす")
+                }
+                .padding(.vertical, 8)
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .accessibilityHint("カメラをひらいて、みつけたカードをうつすよ")
             Spacer()
         }
         .padding(24).frame(maxWidth: 580).frame(maxWidth: .infinity)
@@ -68,36 +78,37 @@ struct PlayView: View {
             withAnimation(.spring(response: 0.55, dampingFraction: 0.7)) { hintAppeared = true }
             speakHint()
         }
-        .onDisappear { SpeechPlayer.shared.stop() }
+        .onDisappear { SpeechPlayer.shared.stop(owner: speechOwner) }
     }
 
     private func speakHint() {
-        guard let hunt = store.hunt, hunt.status == .playing else { return }
+        guard store.screen == .play, let hunt = store.hunt, hunt.status == .playing else { return }
         let hint = HuntEngine.currentHint(hunt)
         let intro = hunt.currentStageIndex == 1
             ? "さあ、ぼうけんのはじまりだよ。ヒントです。\(hint)"
             : "つぎのヒントです。\(hint)"
-        SpeechPlayer.shared.speak(intro)
+        SpeechPlayer.shared.speak(intro, owner: speechOwner)
     }
 }
 
 struct ScanView: View {
+    @State private var speechOwner = UUID()
     @Environment(GameStore.self) private var store
     @State private var cameraError: String?
 
     var body: some View {
         ZStack(alignment: .top) {
-            QRScannerView { payload in
-                handle(payload)
+            if !isDiscovery {
+                QRScannerView { payload in handle(payload) }
+                    .ignoresSafeArea()
             }
-            .ignoresSafeArea()
 
             VStack {
                 VStack(spacing: 16) {
                     Button("とじる") { store.closeScan() }
                         .buttonStyle(SecondaryButtonStyle())
                         .frame(width: 120)
-                    Text("わくのなかにQRを入れてね")
+                    Text("カードを わくに あわせてね")
                         .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
                 }
@@ -124,7 +135,19 @@ struct ScanView: View {
                 }
             }
         }
-        .onDisappear { SpeechPlayer.shared.stop() }
+        .overlay {
+            if isDiscovery, let hunt = store.hunt {
+                DiscoveryView(found: hunt.currentStageIndex - 1, total: hunt.stageCount) {
+                    store.continueAfterDiscovery()
+                }
+            }
+        }
+        .onDisappear { SpeechPlayer.shared.stop(owner: speechOwner) }
+    }
+
+    private var isDiscovery: Bool {
+        guard let result = store.scanResult else { return false }
+        return isAdvanced(result)
     }
 
     private func isAdvanced(_ result: ScanResult) -> Bool {
@@ -136,7 +159,8 @@ struct ScanView: View {
         if store.scanResult != nil { return }
         let result = store.scanPayload(payload)
         if let result, result != .cleared, !isAdvanced(result) {
-            SpeechPlayer.shared.speak(result.speech)
+            AudioDirector.shared.play("sfx_qr_retry")
+            SpeechPlayer.shared.speak(result.speech, owner: speechOwner)
         }
     }
 }
@@ -167,8 +191,11 @@ private struct ScannerReticle: View {
 }
 
 struct ClearView: View {
+    @State private var speechOwner = UUID()
     @Environment(GameStore.self) private var store
     @State private var open = false
+    @State private var revealed = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private var treasure: Treasure { store.awardedTreasure }
 
     var body: some View {
@@ -178,6 +205,7 @@ struct ClearView: View {
                 .frame(height: 280)
                 .clipShape(RoundedRectangle(cornerRadius: 32))
                 .overlay(RoundedRectangle(cornerRadius: 32).stroke(Palette.lantern.opacity(0.7), lineWidth: 2))
+            if revealed {
             OwlView(mood: .yay, size: 90)
             Text("ぼうけんクリア")
                 .font(.system(size: 13, weight: .bold, design: .rounded))
@@ -188,7 +216,7 @@ struct ClearView: View {
                 .foregroundStyle(.white)
             GlassPanel {
                 VStack(spacing: 8) {
-                TreasureArtView(treasure: treasure, size: 164, animated: true)
+                TreasureArtView(treasure: treasure, size: 164, animated: !reduceMotion)
                 RarityBadge(rarity: treasure.rarity)
                 Text(treasure.name)
                     .font(.system(size: 24, weight: .heavy, design: .rounded))
@@ -200,26 +228,39 @@ struct ClearView: View {
                 .frame(maxWidth: .infinity)
             }
             if let hunt = store.hunt {
-                Text("QRを\(hunt.stageCount)まい、ぜんぶみつけたよ")
+                Text("カードを\(hunt.stageCount)まい、ぜんぶみつけたよ")
                     .foregroundStyle(Palette.muted)
             }
             Button("たからばこをみる") { store.finishClear() }
                 .buttonStyle(PrimaryButtonStyle())
+            }
         }
         .padding(24)
         .frame(maxWidth: 600)
         .frame(maxWidth: .infinity)
         }
+        .background {
+            RadialGradient(colors: [treasure.accent.opacity(open ? 0.4 : 0.05), .clear], center: .top, startRadius: 10, endRadius: 550)
+        }
+        .background { if open { GloryRays(color: treasure.rarity.accent) } }
+        .overlay { if revealed { CelebrationParticles(color: treasure.rarity.accent) } }
         .foregroundStyle(.white)
         .task {
             do {
-                try await Task.sleep(for: .milliseconds(450))
-                open = true
-                try await Task.sleep(for: .milliseconds(450))
-                SpeechPlayer.shared.speak("クリア！\(treasure.name)をゲットしたよ")
+                AudioDirector.shared.play("sfx_chest_charge")
+                try await Task.sleep(for: .milliseconds(1200))
+                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.9)) { open = true }
+                AudioDirector.shared.play("sfx_chest_open")
+                AudioDirector.shared.successHaptic()
+                try await Task.sleep(for: .milliseconds(1000))
+                withAnimation(reduceMotion ? nil : .spring(response: 0.7, dampingFraction: 0.7)) { revealed = true }
+                AudioDirector.shared.play("sfx_treasure_get")
+                AudioDirector.shared.successHaptic()
+                try await Task.sleep(for: .milliseconds(900))
+                SpeechPlayer.shared.speak("クリア！\(treasure.name)をゲットしたよ", owner: speechOwner)
             } catch { /* Leaving the screen cancels the delayed announcement. */ }
         }
-        .onDisappear { SpeechPlayer.shared.stop() }
+        .onDisappear { SpeechPlayer.shared.stop(owner: speechOwner) }
     }
 }
 
@@ -309,7 +350,6 @@ struct CollectionView: View {
         .sheet(item: $selectedTreasure) { treasure in
             TreasureDetailView(treasure: treasure, count: store.collection.filter { $0.treasureId == treasure.id }.count)
         }
-        .onDisappear { SpeechPlayer.shared.stop() }
     }
 }
 
@@ -356,6 +396,7 @@ private struct TreasureCollectionCard: View {
 }
 
 private struct TreasureDetailView: View {
+    @State private var speechOwner = UUID()
     let treasure: Treasure
     let count: Int
     @Environment(\.dismiss) private var dismiss
@@ -391,7 +432,7 @@ private struct TreasureDetailView: View {
                         .font(.system(size: 14, weight: .bold, design: .rounded))
                         .foregroundStyle(treasure.rarity.accent)
                     Button {
-                        SpeechPlayer.shared.speak("\(treasure.name)。\(treasure.flavor)")
+                        SpeechPlayer.shared.speak("\(treasure.name)。\(treasure.flavor)", owner: speechOwner)
                     } label: { Label("たからのおはなしをきく", systemImage: "speaker.wave.2.fill") }
                         .buttonStyle(PrimaryButtonStyle())
                 }
@@ -400,6 +441,6 @@ private struct TreasureDetailView: View {
         }
         .foregroundStyle(.white)
         .preferredColorScheme(.dark)
-        .onDisappear { SpeechPlayer.shared.stop() }
+        .onDisappear { SpeechPlayer.shared.stop(owner: speechOwner) }
     }
 }

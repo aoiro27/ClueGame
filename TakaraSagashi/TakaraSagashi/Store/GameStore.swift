@@ -47,7 +47,13 @@ final class GameStore {
 
     func updateCurrentHint(_ hint: String) {
         guard let hunt else { return }
-        self.hunt = try? HuntEngine.setStageHint(hunt, stageIndex: setupIndex, hint: hint)
+        updateHint(hint, huntID: hunt.id, stageIndex: setupIndex)
+    }
+
+    func updateHint(_ hint: String, huntID: String, stageIndex: Int) {
+        guard let hunt, hunt.id == huntID,
+              let updated = try? HuntEngine.setStageHint(hunt, stageIndex: stageIndex, hint: hint) else { return }
+        self.hunt = updated
         persist()
     }
 
@@ -110,7 +116,7 @@ final class GameStore {
 
     @discardableResult
     func scanPayload(_ payload: String) -> ScanResult? {
-        guard let hunt else { return nil }
+        guard scanResult == nil, let hunt else { return nil }
         let outcome = HuntEngine.applyScan(hunt, payload: payload)
         if outcome.result == .cleared {
             let awarded = TreasureCatalog.awardTreasure(collection: collection, huntId: outcome.hunt.id)
@@ -127,13 +133,17 @@ final class GameStore {
         if case .advanced = outcome.result {
             self.hunt = outcome.hunt
             scanResult = outcome.result
-            screen = .play
             persist()
             return outcome.result
         }
         scanResult = outcome.result
         persist()
         return outcome.result
+    }
+
+    func continueAfterDiscovery() {
+        guard case .advanced = scanResult else { return }
+        closeScan()
     }
 
     func clearScanResult() {

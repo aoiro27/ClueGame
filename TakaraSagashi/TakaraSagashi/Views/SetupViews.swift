@@ -62,11 +62,11 @@ struct HomeView: View {
     private var lead: String {
         switch store.hunt?.status {
         case .playing:
-            "ヒントをきいて、かくされたQRをみつけよう。"
+            "ヒントをきいて、かくれたカードをみつけよう。"
         case .cleared:
             "このぼうけんはクリア！たからばこをみてみよう。"
         case .ready:
-            "ホーちゃんといっしょに、QRをたどってたからをさがそう。"
+            "ホーちゃんといっしょに、カードをみつけてたからをさがそう。"
         default:
             "おとなに、かくしものづくりをおねがいしてね。"
         }
@@ -74,6 +74,8 @@ struct HomeView: View {
 }
 
 struct ParentView: View {
+    @AppStorage("musicEnabled") private var musicEnabled = true
+    @AppStorage("effectsEnabled") private var effectsEnabled = true
     @Environment(GameStore.self) private var store
     @State private var confirmNew = false
 
@@ -82,6 +84,8 @@ struct ParentView: View {
     var body: some View {
         StoryPage {
             topBar("おとなのメニュー") { store.goTo(.home) }
+                Toggle("BGM", isOn: $musicEnabled).tint(Palette.lantern)
+                Toggle("効果音", isOn: $effectsEnabled).tint(Palette.lantern)
             GlassPanel {
                 HStack(spacing: 20) {
                     VStack(alignment: .leading, spacing: 10) {
@@ -164,12 +168,16 @@ struct SetupCountView: View {
 }
 
 struct SetupStageView: View {
+    @FocusState private var hintFocused: Bool
     @Environment(GameStore.self) private var store
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                topBar("ヒントをつくる") { store.prevSetupStage() }
+                topBar("ヒントをつくる") {
+                    hintFocused = false
+                    store.prevSetupStage()
+                }
                 if let hunt = store.hunt {
                     SectionCaption(text: "準備 02 / かくしもの")
                     QuestProgressView(stageCount: hunt.stageCount, currentStage: store.setupIndex)
@@ -185,7 +193,9 @@ struct SetupStageView: View {
                     Text("かくしたばしょのヒント")
                         .font(.system(size: 15, weight: .bold, design: .rounded))
                         .foregroundStyle(.white)
-                    TextField("れい：リビングのソファのした", text: hintBinding, axis: .vertical)
+                    TextField("れい：リビングのソファのした", text: hintBinding(huntID: hunt.id, stageIndex: stage.index), axis: .vertical)
+                        .focused($hintFocused)
+                        .id("\(hunt.id)-\(stage.index)")
                         .lineLimit(3...5)
                         .padding()
                         .background(Palette.parchment)
@@ -195,6 +205,7 @@ struct SetupStageView: View {
                         .font(.system(size: 13, design: .rounded))
                         .foregroundStyle(Palette.muted)
                     Button(stage.index == hunt.stageCount ? "かくしものをおわる" : "つぎのカードへ") {
+                        hintFocused = false
                         store.nextSetupStage()
                     }
                     .buttonStyle(PrimaryButtonStyle(disabled: stage.hint.isEmpty))
@@ -206,10 +217,13 @@ struct SetupStageView: View {
         }
     }
 
-    private var hintBinding: Binding<String> {
+    private func hintBinding(huntID: String, stageIndex: Int) -> Binding<String> {
         Binding(
-            get: { store.currentStage?.hint ?? "" },
-            set: { store.updateCurrentHint($0) }
+            get: {
+                guard store.hunt?.id == huntID else { return "" }
+                return store.hunt?.stages.first { $0.index == stageIndex }?.hint ?? ""
+            },
+            set: { store.updateHint($0, huntID: huntID, stageIndex: stageIndex) }
         )
     }
 }
